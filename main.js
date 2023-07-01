@@ -2,7 +2,7 @@ const recipeForm = document.getElementById('recipe-form');
 const recipeContainer = document.getElementById('recipe-container');
 
 let listItems = [];
-
+getingFromLocalStorage();
 function handleFormSubmit(e) {
     e.preventDefault();
 
@@ -54,4 +54,35 @@ function displayRecipes() {
     recipeContainer.innerHTML = tempString;
 }
 
+function addingToLocalStorage() {
+    localStorage.setItem('recipeContainer', JSON.stringify(listItems));
+}
+
+function getingFromLocalStorage() {
+    const tempLocalStrg = localStorage.getItem('recipeContainer');
+    if (tempLocalStrg === null || tempLocalStrg === 0) {
+        return
+    }
+    const tempRecipes = JSON.parse(tempLocalStrg);
+    listItems = [...tempRecipes];
+    displayRecipes();
+
+}
+
+function deleteRecipe(id) {
+    listItems = listItems.filter(item => item.id !== id);
+}
+
 recipeForm.addEventListener('submit', handleFormSubmit);
+recipeForm.addEventListener('submit', addingToLocalStorage);
+
+window.addEventListener('DOMContentLoaded', getingFromLocalStorage);
+recipeContainer.addEventListener('click', e => {
+    if (e.target.matches('.btn-outline-danger')) {
+        const id = Number(e.target.value);
+        deleteRecipe(id);
+        displayRecipes();
+        addingToLocalStorage();
+    }
+})
+
